@@ -104,7 +104,8 @@ public class PacienteController extends BaseController<Paciente> {
                 case 2:
                     return;
                 default:
-                    System.out.println("Opção inválida.");
+                    Mensagem.mensagemOpcaoInvalida();
+                    break;
             }
         } while (opcao != 2);
     }

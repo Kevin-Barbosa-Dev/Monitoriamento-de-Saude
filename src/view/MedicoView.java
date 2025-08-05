@@ -1,7 +1,6 @@
 package view;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -66,14 +65,6 @@ public class MedicoView extends BaseView<Medico> {
         return ler.nextInt();
     }
 
-    public void exibirConsultasAgendadas(int num, String nomeMedico,
-            String pacientesConsultasMarcadas, LocalDate data, LocalTime hora) {
-        System.out.println("\nConsultas agendadas para o médico " + nomeMedico + ":");
-
-        System.out.println(num + ". Paciente: " + pacientesConsultasMarcadas + ", Data: "
-                + data + ", Hora: " + hora);
-    }
-
     public int selecionarConsulta() {
         int opcao = -1;
         while (opcao < 0) {
@@ -130,6 +121,16 @@ public class MedicoView extends BaseView<Medico> {
         System.out.println("Telefone: " + telefone);
         System.out.println("E-mail: " + email);
         System.out.println("------------------------------------");
+    }
+
+    public void exibirPacientes(int i, String nome, String cpf) {
+        System.out.println(i + ". " + nome + " (CPF: " + cpf + ")");
+    }
+
+    public int selecionarUmPaciente() {
+        System.out.println("Selecione o número do paciente (ou 0 para voltar): ");
+        return ler.nextInt();
+
     }
 
     public int opcoesDoPefilPaciente() {

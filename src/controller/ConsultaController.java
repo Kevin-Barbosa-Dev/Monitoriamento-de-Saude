@@ -5,6 +5,8 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+
+import utils.ConsultaUtils;
 import utils.Mensagem;
 import model.Consulta;
 import model.Medico;
@@ -89,9 +91,9 @@ public class ConsultaController {
             Mensagem.mensagemNaoHaMedicos();
             return null;
         }
-        for (int i = 0; i < medicosDisponiveis.size(); i++) {
-            view.escolherMedico((i + 1), medicosDisponiveis.get(i).getNome(),
-                    medicosDisponiveis.get(i).getEspecialidade());
+        int i = 1;
+        for (Medico medico : medicosDisponiveis) {
+            view.escolherMedico(i++, medico.getNome(), medico.getEspecialidade());
         }
         int escolha = view.getMedicoEscolhido() - 1;
         return medicosDisponiveis.get(escolha);
@@ -123,17 +125,13 @@ public class ConsultaController {
 
     public void consultarAgendamentos() {
         List<Consulta> consultas = paciente.getHistoricoMedico();
-        for (Consulta consulta : consultas) {
-            if (consultas != null && !consultas.isEmpty() && consulta.getPaciente() != null
-                    && consulta.getMedico() != null) {
-                view.exibirAgendamentos(
-                        consulta.getDataConsulta(),
-                        consulta.getHoraConsulta(),
-                        consulta.getPaciente().getNome(),
-                        consulta.getMedico().getNome());
-            }
-        }
-        ;
+
+        consultas.stream()
+                .forEach(this::exibirAgendamentoSeValido);
+    }
+
+    private void exibirAgendamentoSeValido(Consulta consulta) {
+        ConsultaUtils.exibirConsultaBasica(consulta, view);
     }
 
     public void consultaOpcoes(Scanner ler) {

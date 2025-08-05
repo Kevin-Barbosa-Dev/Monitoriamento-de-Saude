@@ -1,8 +1,10 @@
 package controller;
 
 import model.*;
+import utils.ConsultaUtils;
 import utils.MedicoInputType;
 import utils.Mensagem;
+import view.ConsultaView;
 import view.MedicamentoView;
 import view.MedicoView;
 import java.util.ArrayList;
@@ -14,6 +16,7 @@ public class MedicoController extends BaseController<Medico> {
     private Scanner sc;
     private Medico medico;
     private MedicoView medicoView;
+    private ConsultaView view;
     private DispositivoController dispositivoController;
     private UsuarioRepositorio repositorio;
     private MedicamentoView medicamentoView;
@@ -24,6 +27,7 @@ public class MedicoController extends BaseController<Medico> {
     public MedicoController(Medico medico) {
         this.medico = medico;
         this.medicoView = new MedicoView();
+        this.view = new ConsultaView();
         this.dispositivoController = new DispositivoController();
         this.sc = new Scanner(System.in);
         this.repositorio = UsuarioRepositorio.getInstance();
@@ -147,20 +151,8 @@ public class MedicoController extends BaseController<Medico> {
     public void consultarAgendamentos() {
         List<Consulta> consultas = medico.getConsultas();
 
-        if (consultas == null || consultas.isEmpty()) {
-            Mensagem.mensagemNaoHaConsultas();
-            return;
-        }
-
-        for (int i = 0; i < consultas.size(); i++) {
-            Consulta consulta = consultas.get(i);
-            medicoView.exibirConsultasAgendadas(
-                    i + 1,
-                    medico.getNome(),
-                    consulta.getPaciente().getNome(),
-                    consulta.getDataConsulta(),
-                    consulta.getHoraConsulta());
-        }
+        consultas.stream()
+                .forEach(this::exibirConsulta);
 
         int opcao = medicoView.selecionarConsulta();
         if (opcao > 0 && opcao <= consultas.size()) {
@@ -170,6 +162,10 @@ public class MedicoController extends BaseController<Medico> {
                     consultaSelecionada.getPrescricao());
             exibirOpcoesConsulta(consultaSelecionada);
         }
+    }
+
+    private void exibirConsulta(Consulta consulta) {
+        ConsultaUtils.exibirConsultaBasica(consulta, view);
     }
 
     private void exibirOpcoesConsulta(Consulta consulta) {
@@ -254,18 +250,14 @@ public class MedicoController extends BaseController<Medico> {
             Mensagem.mensagemNenhumPaciente();
             return null;
         }
-
+        int i = 1;
         Mensagem.mensagemLista();
-        for (int i = 0; i < pacientes.size(); i++) {
-            Paciente paciente = pacientes.get(i);
-            System.out.println((i + 1) + ". " + paciente.getNome() + " (CPF: " + paciente.getCpf() + ")");
+        for (Paciente paciente : pacientes) {
+            medicoView.exibirPacientes(i++, paciente.getNome(), paciente.getCpf());
         }
 
         // Selecionar paciente
-        System.out.println("Selecione o número do paciente (ou 0 para voltar): ");
-        int escolha = sc.nextInt();
-        sc.nextLine();
-
+        int escolha = medicoView.selecionarUmPaciente();
         if (escolha == 0) {
             return null; // Voltar
         }

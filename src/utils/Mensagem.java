@@ -183,4 +183,9 @@ public class Mensagem {
     public static String mensagemInvalidaDigUmOuDois() {
         return "Entrada inválida. Por favor digite 1 para Sim ou 2 para Não";
     }
+
+    public static int listaNumerica() {
+        int listaNum = 1;
+        return listaNum++;
+    }
 }
