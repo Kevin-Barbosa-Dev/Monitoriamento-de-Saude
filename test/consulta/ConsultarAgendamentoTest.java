@@ -106,7 +106,7 @@ public class ConsultarAgendamentoTest {
         System.setOut(new PrintStream(outContent));
 
         medicoController = new MedicoController(medico);
-        medicoController.consultarAgendamentos();
+        medicoController.consultarAgendamentosESelecionar();
 
         String output = outContent.toString();
         assertTrue(output.contains("Data da Consulta:"));

@@ -129,7 +129,7 @@ public class MedicoController extends BaseController<Medico> {
                     selecionarPacienteExibirPlano();
                     break;
                 case 3:
-                    consultarAgendamentos();
+                    consultarAgendamentosESelecionar();
                     break;
                 case 4:
                     dispositivoController.menu();
@@ -148,24 +148,33 @@ public class MedicoController extends BaseController<Medico> {
         } while (opcao != 7);
     }
 
-    public void consultarAgendamentos() {
+    public void consultarAgendamentosESelecionar() {
         List<Consulta> consultas = medico.getConsultas();
 
         consultas.stream()
                 .forEach(this::exibirConsulta);
 
         int opcao = medicoView.selecionarConsulta();
-        if (opcao > 0 && opcao <= consultas.size()) {
-            Consulta consultaSelecionada = consultas.get(opcao - 1);
-            medicoView.exibirDetalhesConsulta(consultaSelecionada.getPaciente().getNome(),
-                    consultaSelecionada.getDataConsulta(), consultaSelecionada.getDiagnostico(),
-                    consultaSelecionada.getPrescricao());
-            exibirOpcoesConsulta(consultaSelecionada);
-        }
+        selecionarConsultaListadaEOpcoes(opcao, consultas);
     }
 
     private void exibirConsulta(Consulta consulta) {
-        ConsultaUtils.exibirConsultaBasica(consulta, view);
+        int num = 1;
+        ConsultaUtils.exibirConsultaBasica(consulta, view, num);
+    }
+
+    private int selecionarConsultaListadaEOpcoes(int opcao, List<Consulta> consultas) {
+        if (opcao < 0 || opcao > consultas.size()) {
+            Mensagem.mensagemOpcaoInvalida();
+            return -1;
+        }
+        Consulta consultaSelecionada = consultas.get(opcao - 1);
+        medicoView.exibirDetalhesConsulta(
+                consultaSelecionada.getPaciente().getNome(),
+                consultaSelecionada.getDataConsulta(), consultaSelecionada.getDiagnostico(),
+                consultaSelecionada.getPrescricao());
+        exibirOpcoesConsulta(consultaSelecionada);
+        return opcao;
     }
 
     private void exibirOpcoesConsulta(Consulta consulta) {
@@ -178,7 +187,7 @@ public class MedicoController extends BaseController<Medico> {
                     fazerDiagnostico(consulta);
                     break;
                 case 2:
-                    alterarDiagnostico(consulta);
+                    alterarDiagnosticoDaConsulta(consulta);
                     break;
                 case 3:
                     registrarPrescricao(consulta);
@@ -198,30 +207,27 @@ public class MedicoController extends BaseController<Medico> {
         Mensagem.mensagemDiagnosticoCriado(diagnostico);
     }
 
-    private void alterarDiagnostico(Consulta consulta) {
+    private Diagnostico alterarDiagnosticoDaConsulta(Consulta consulta) {
         List<Diagnostico> diagnosticos = consulta.getDiagnostico();
 
-        if (diagnosticos.isEmpty()) {
-            Mensagem.mensagemDiagnosticoNaoEncontrado();
-            return;
-        }
+        if (!diagnosticos.isEmpty()) {
+            for (int i = 0; i < diagnosticos.size(); i++) {
+                medicoView.listarDiagnosticos(diagnosticos, i);
+            }
 
-        // Display existing diagnostics
-        for (int i = 0; i < diagnosticos.size(); i++) {
-            System.out.printf("[%d] - %s%n", i + 1, diagnosticos.get(i).getDiagnostico());
-        }
-
-        System.out.print("Selecione o diagnóstico a ser alterado (1-" + diagnosticos.size() + "): ");
-        int escolha = sc.nextInt();
-        sc.nextLine(); // Clear buffer
-
-        if (escolha > 0 && escolha <= diagnosticos.size()) {
+            int escolha = medicoView.escolherDiagnostico(diagnosticos);
+            if (escolha < 1 || escolha > diagnosticos.size()) {
+                Mensagem.mensagemOpcaoInvalida();
+                return null;
+            }
             Diagnostico novoDiagnostico = medicoView.formAlterarDiagnostico(consulta.getPaciente().getNome());
             diagnosticos.set(escolha - 1, novoDiagnostico);
             Mensagem.mensagemDiagnosticoAtualizado(novoDiagnostico);
-        } else {
-            Mensagem.mensagemOpcaoInvalida();
+            return novoDiagnostico;
         }
+        Mensagem.mensagemDiagnosticoNaoEncontrado();
+        return null;
+
     }
 
     private void registrarPrescricao(Consulta consulta) {

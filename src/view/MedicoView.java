@@ -15,7 +15,7 @@ public class MedicoView extends BaseView<Medico> {
         System.out.println("\n********** Menu Medico **********");
         System.out.println("1. Consultar dados");
         System.out.println("2. Plano do paciente");
-        System.out.println("3. Consultar Agendamento");
+        System.out.println("3. Consultar Agendamentos");
         System.out.println("4. Menu dispositivo");
         System.out.println("5. Menu Alerta");// Falta implementar
         System.out.println("6. Menu Monitoramento");// Falta implementar
@@ -66,19 +66,8 @@ public class MedicoView extends BaseView<Medico> {
     }
 
     public int selecionarConsulta() {
-        int opcao = -1;
-        while (opcao < 0) {
-            String entrada = ler.nextLine();
-            try {
-                opcao = Integer.parseInt(entrada); // Tenta converter a entrada
-                if (opcao < 0) {
-                    System.out.println("Por favor, escolha um número válido.");
-                }
-            } catch (NumberFormatException e) {
-                System.out.println("Entrada inválida. Por favor, digite um número.");
-            }
-        }
-        return opcao;
+        System.out.println("Por favor, escolha um número válido.");
+        return ler.nextInt();
     }
 
     public void exibirDetalhesConsulta(String nomePaciente, LocalDate data, List<Diagnostico> diagnostico,
@@ -147,6 +136,15 @@ public class MedicoView extends BaseView<Medico> {
         System.out.println("Digite o diagnóstico para o paciente " + nomePaciente + ": ");
         String diagnostico = ler.nextLine();
         return new Diagnostico(diagnostico);
+    }
+
+    public void listarDiagnosticos(List<Diagnostico> diagnosticos, int num) {
+        System.out.printf("[%d] - %s%n", num + 1, diagnosticos.get(num).getDiagnostico());
+    }
+
+    public int escolherDiagnostico(List<Diagnostico> diagnosticos) {
+        System.out.print("Selecione o diagnóstico a ser alterado (1-" + diagnosticos.size() + "): ");
+        return ler.nextInt();
     }
 
     public Diagnostico formAlterarDiagnostico(String nomePaciente) {

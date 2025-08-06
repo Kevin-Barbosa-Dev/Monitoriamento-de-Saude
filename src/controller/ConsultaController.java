@@ -131,7 +131,8 @@ public class ConsultaController {
     }
 
     private void exibirAgendamentoSeValido(Consulta consulta) {
-        ConsultaUtils.exibirConsultaBasica(consulta, view);
+        int i = 1;
+        ConsultaUtils.exibirConsultaBasica(consulta, view, i++);
     }
 
     public void consultaOpcoes(Scanner ler) {
